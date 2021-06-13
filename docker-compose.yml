@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  server:
+    image: nginx:alpine
+    container_name: app-nginx
+    volumes:
+      - .:/var/www/html
+      - .docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - 8000:80
+    networks:
+      - backend
+
+  api:
+    build: .docker/php
+    container_name: app-php
+    volumes:
+      - .:/var/www/html:rw
+    networks:
+      - backend
+
+  mysql:
+    image: mysql:8
+    container_name: app-mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: pensamentos
+      MYSQL_USER: pensamentos
+      MYSQL_PASSWORD: pensamentos
+      MYSQL_ROOT_PASSWORD: pensamentos
+    volumes:
+      - .docker/dbdata:/var/lib/mysql
+    networks:
+      - backend
+
+networks:
+  backend:
